@@ -1,66 +1,78 @@
-<!DOCTYPE html PUBLIC “-//W3C//DTD XHTML 1.0 Transitional//EN” “https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd”>
+<!DOCTYPE html PUBLIC “-//W3C//DTD XHTML 1.0 Transitional//EN”
+    “https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd”>
 <html xmlns=“https://www.w3.org/1999/xhtml”>
+
 <head>
     <title>{{meta.subject}}</title>
-<meta http–equiv=“Content-Type” content=“text/html; charset=UTF-8” />
-<meta http–equiv=“X-UA-Compatible” content=“IE=edge” />
-<meta name=“viewport” content=“width=device-width, initial-scale=1.0 “ />
-<style>
-    table {
-        border-collapse: collapse;
-        overflow: hidden;
-    }
-    th, td {
-        padding: 1em;
-        background: #ddd;
-        border-bottom: 2px solid white;
-        border-right: 2px solid white;
-    }
-    .final{
-        background: #aec6c7;
-        font-weight: bold;
-        font-size: 18px;
-    }
-    body {
-        margin: 1.5em;
-    }
-</style>
+    <meta http–equiv=“Content-Type” content=“text/html; charset=UTF-8” />
+    <meta http–equiv=“X-UA-Compatible” content=“IE=edge” />
+    <meta name=“viewport” content=“width=device-width, initial-scale=1.0 “ />
+    <style>
+        table {
+            border-collapse: collapse;
+            overflow: hidden;
+        }
+
+        th,
+        td {
+            padding: 1em;
+            background: #ddd;
+            border-bottom: 2px solid white;
+            border-right: 2px solid white;
+        }
+
+        .final,
+        tr th:last-child,
+        tr td:last-child {
+            background: #aec6c7;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        body {
+            margin: 1.5em;
+        }
+
+    </style>
 </head>
+
 <body>
     <div>
-        <p>Buenas tardes {{data.nombres + " " + data.apellidos}},</p> 
-        <p>Las siguientes son las notas del corte {{meta.term}}. Cualquier reclamo por favor enviarme un correo a más tardar hoy en la noche. </p>
+        <p>Buenas tardes {{data.nombres + " " + data.apellidos}},</p>
+        <p>Las siguientes son las notas del corte {{meta.term}}. Cualquier reclamo por favor enviarme un correo a más
+            tardar hoy en la noche. </p>
     </div>
 
     <div>
         {% if 'course' in meta %}
-            <h4>{{meta.course}}</h4>
+        <h4>{{meta.course}}</h4>
         {% endif %}
         {% if 'group' in meta %}
-            <h4>group {{meta.group}}</h4>
+        <h4>group {{meta.group}}</h4>
         {% endif %}
         {% if 'schedule' in meta %}
-            <h4>{{meta.schedule}}</h4>
+        <h4>{{meta.schedule}}</h4>
         {% endif %}
     </div>
 
     <table class="data">
         <tr>
             {% for key in data.keys() %}
-                <th>{{key}}</th>
+            <th>{{key}}</th>
             {% endfor %}
         </tr>
         <tr>
             {% for values in data.values() %}
-                <td>{{values}}</td>
+            <td>{{values}}</td>
             {% endfor %}
         </tr>
     </table>
 
-    <br/>
+    <br />
     <div>
         <p>Atentamente,</p>
         <p>{{meta.teacher}}.</p>
     </div>
 </body>
+
 </html>
