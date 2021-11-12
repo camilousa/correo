@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        table {
+          border-collapse: collapse;
+          overflow: hidden;
+        }
+
+        th, td {
+          padding: 1em;
+          background: #ddd;
+          border-bottom: 2px solid white;
+          border-right: 2px solid white;
+        }
+        .final{
+          background: #aec6c7;
+          font-weight: bold;
+          font-size: 18px;
+        }
+
+
+        body {
+          margin: 1.5em;
+        }
+    </style>
+</head>
+<body>
+<div>
+
+<p>Buenas tardes {{student_name}}, </p>
+    <p> las siguientes son las notas del corte 2. Cualquier reclamo por favor enviarme un correo a más tardar hoy en la noche.
+    </p>
+
+
+
+</div>
+
+
+
+<table class="data">
+    <tr>{{headers}}</tr>
+  <tr>{{data}}</tr>
+</table>
+    <p> atentamente, </p>
+    <p>
+        Camilo Rodríguez.
+    </p>
+
+</body>
+</html>
