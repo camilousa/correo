@@ -1,12 +1,17 @@
+import os
+from dotenv import load_dotenv
 import smtplib
 import traceback
+import getpass
 
 from jinja2 import Environment, PackageLoader, select_autoescape
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import pandas as pd
 
-env = Environment(
+load_dotenv() # lectura de las env variables del archivo .env
+# Creacion de un env para encontrar y renderizar templates
+env = Environment( 
         loader=PackageLoader("sendEmail"),
         autoescape=select_autoescape()
     )
@@ -28,8 +33,7 @@ def send_email(smtp, source_address, destination_address, html, meta):
 
     except Exception as e:
         print('no se pudo enviar el correo')
-        raise e
-        
+        raise e      
 
 def start_server(host, port, source_address, password):
     smtp = smtplib.SMTP(host, port)
@@ -37,7 +41,6 @@ def start_server(host, port, source_address, password):
     smtp.login(source_address, password)
     return smtp
         
-
 def read_data(path, sheet, header=0):
     df = pd.read_excel(path, sheet, header=header)
     return df
@@ -46,12 +49,21 @@ def render_template(template, data, meta):
     template = env.get_template(template)
     return template.render(data=data, meta=meta)
 
-def main(data_path, data_sheet, meta_sheet, template, debug=False):
+def main(data_path, data_sheet, meta_sheet, template, host_name='outlook', debug=False):
     print("*** EMAIL***")
-    host='smtp-mail.outlook.com'
-    port=587
-    source_address=''
-    password=''
+    host = os.getenv('HOST_GMAIL') if host_name == 'gmail' else os.getenv('HOST_OUTLOOK')
+    port = os.getenv('PORT')
+    source_address = os.getenv('EMAIL_GMAIL') if host_name == 'gmail' else os.getenv('EMAIL_OUTLOOK')
+    password = os.getenv('PASSWORD_GMAIL') if host_name == 'gmail' else os.getenv('PASSWORD_OUTLOOK')
+    destination_address = os.getenv('DESTINATION')
+
+    if not source_address:
+        source_address = input(f"correo {host_name}: ")
+        if not password:
+            try:
+                password = getpass.getpass()
+            except Exception as error:
+                print('ERROR', error)
 
     try:
         # tabla de notas
@@ -72,16 +84,17 @@ def main(data_path, data_sheet, meta_sheet, template, debug=False):
         for _, row in data.iterrows():
             d = row.to_dict()
             d.pop('id')
+            destination_address = d['correo']
             html = render_template(template, d, meta_data)
             
-            print("\nsending to...{}".format(d['correo']))
+            print("\nsending to...{}".format(destination_address))
             print("\nsubject:{}".format(meta_data['subject']))
             if 'cc' in meta_data: print("\ncc to...{}".format(meta_data['cc']))
             
             if debug:
                 print(html)
             else:
-                send_email(smtp, source_address, d['correo'], html, meta_data)
+                send_email(smtp, source_address, destination_address, html, meta_data)
 
         smtp.quit()
     except Exception as e:
@@ -98,7 +111,5 @@ if __name__ == '__main__':
     data_sheet = 'mlcorte2'
     meta_sheet = 'email'
     template = 'template_camilo.html'
-    host = 'smtp-mail.outlook.com'
-    port = 587
     debug=True
-    main(data_path, data_sheet, meta_sheet, template, debug)
+    main(data_path, data_sheet, meta_sheet, template, debug=debug)
