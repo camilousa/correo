@@ -32,6 +32,8 @@ def init_argparse():
             help='Nombre de la hoja donde estan los datos')
     parser.add_argument('template',
             help='Nombre de la plantilla  HTML para el correo (la plantilla debe estar en la carpeta "./templates" agregar la extension del archivo eg: .html)') 
+    parser.add_argument('--host', default="outlook", type=str,
+            help='host del servidor de correo, las opciones disponibles son outlook y gmail', choices=['outlook', 'gmail'])
     parser.add_argument('-e','--email-sheet', default="email", type=str,
             help='Nombre de la hoja donde esta la meta información del correo (eg: asunto)')
 
@@ -120,7 +122,6 @@ def main(data_path, data_sheet, meta_sheet, template, host_name='outlook', debug
                 print(html)
             else:
                 send_email(smtp, source_address, destination_address, html, meta_data)
-            break
 
         smtp.quit()
     except exceptions.TemplateNotFound as e:
@@ -138,4 +139,6 @@ def main(data_path, data_sheet, meta_sheet, template, host_name='outlook', debug
 if __name__ == '__main__':
     parser = init_argparse()
     args = parser.parse_args()
-    main(args.path, args.data_sheet, args.email_sheet, args.template, debug=args.debug)
+    main(args.path, args.data_sheet, 
+        args.email_sheet, args.template, 
+        host_name=args.host, debug=args.debug)
