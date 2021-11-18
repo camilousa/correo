@@ -3,8 +3,10 @@ from dotenv import load_dotenv
 import smtplib
 import traceback
 import getpass
+import argparse
+import pathlib
 
-from jinja2 import Environment, PackageLoader, select_autoescape
+from jinja2 import Environment, PackageLoader, select_autoescape, exceptions
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import pandas as pd
@@ -15,6 +17,29 @@ env = Environment(
         loader=PackageLoader("sendEmail"),
         autoescape=select_autoescape()
     )
+
+def init_argparse():
+    parser = argparse.ArgumentParser(
+            description="Envio de correos automaticos capturando la información de una hoja de calculo",
+            formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+
+    parser.add_argument('-v', '--version', action='version', version='%(prog)s 1.0.0')
+    
+    parser.add_argument('path', 
+            type=pathlib.Path, 
+            help='Path del archivo a extraer los datos')
+    parser.add_argument('data_sheet', 
+            help='Nombre de la hoja donde estan los datos')
+    parser.add_argument('template',
+            help='Nombre de la plantilla  HTML para el correo (la plantilla debe estar en la carpeta "./templates" agregar la extension del archivo eg: .html)') 
+    parser.add_argument('-e','--email-sheet', default="email", type=str,
+            help='Nombre de la hoja donde esta la meta información del correo (eg: asunto)')
+
+    parser.add_argument('-d', '--debug', action='store_true', default=False,
+            help='Comprobación del contenido del correo. Imprime el correo del destinatario y el contenido del correo, NO se envia el correo al destinatario')
+
+    
+    return parser
 
 def send_email(smtp, source_address, destination_address, html, meta):
     try:
@@ -95,8 +120,12 @@ def main(data_path, data_sheet, meta_sheet, template, host_name='outlook', debug
                 print(html)
             else:
                 send_email(smtp, source_address, destination_address, html, meta_data)
+            break
 
         smtp.quit()
+    except exceptions.TemplateNotFound as e:
+        print(f"Plantilla no encontrada {e}.")
+        print("Revise si el archivo se encuentra en la carpeta 'templates/'.")
     except Exception as e:
         print("Error enviando correos: ")
         if debug:
@@ -107,9 +136,6 @@ def main(data_path, data_sheet, meta_sheet, template, host_name='outlook', debug
 
 
 if __name__ == '__main__':
-    data_path = './sample_data/Aprendizaje-máquina-corte2.xlsx'
-    data_sheet = 'mlcorte2'
-    meta_sheet = 'email'
-    template = 'template_camilo.html'
-    debug=True
-    main(data_path, data_sheet, meta_sheet, template, debug=debug)
+    parser = init_argparse()
+    args = parser.parse_args()
+    main(args.path, args.data_sheet, args.email_sheet, args.template, debug=args.debug)
