@@ -31,26 +31,28 @@ python sendEmail.py <path> <data_shett> <template> -d
 Para mas información de opciones del programa y su uso se pude ejecutar con la opcion ```-h | --help ```
 
 ```zsh
-usage: sendEmail.py [-h] [-v] [-e EMAIL_SHEET] [-d] path data_sheet template
+usage: sendEmail.py [-h] [-v] [--host {outlook,gmail}] [-e EMAIL_SHEET] [-d] path data_sheet template
 
-Envio de correos automaticos capturando la información de una hoja de cálculo
+Envio de correos automaticos capturando la información de una hoja de calculo
 
 positional arguments:
   path                  Path del archivo a extraer los datos
   data_sheet            Nombre de la hoja donde estan los datos
-  template              Nombre de la plantilla HTML para el correo (la
-                        plantilla debe estar en la carpeta "./templates"
-                        agregar la extension del archivo eg: .html)
+  template              Nombre de la plantilla HTML para el correo (la plantilla debe estar en la
+                        carpeta "./templates" agregar la extension del archivo eg: .html)
 
 optional arguments:
   -h, --help            show this help message and exit
-  -v, --version         show program's version number and exit
+  -v, --version         show program version number and exit
+  --host {outlook,gmail}
+                        host del servidor de correo, las opciones disponibles son outlook y gmail
+                        (default: outlook)
   -e EMAIL_SHEET, --email-sheet EMAIL_SHEET
-                        Nombre de la hoja donde esta la meta información del
-                        correo (eg: asunto) (default: email)
-  -d, --debug           Comprobación del contenido del correo. Imprime el
-                        correo del destinatario y el contenido del correo, NO
-                        se envia el correo al destinatario (default: False)
+                        Nombre de la hoja donde esta la meta información del correo (eg: asunto)
+                        (default: email)
+  -d, --debug           Comprobación del contenido del correo. Imprime el correo del destinatario y
+                        el contenido del correo, NO se envia el correo al destinatario (default:
+                        False)
 ```
 ### **templates**
 
