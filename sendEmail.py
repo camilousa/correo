@@ -1,4 +1,5 @@
 import os
+import sys
 from dotenv import load_dotenv
 import smtplib
 import traceback
@@ -43,6 +44,46 @@ def init_argparse():
     
     return parser
 
+def getEnVars(host_name='outlook'):
+    host = os.getenv('HOST_GMAIL') if host_name == 'gmail' else os.getenv('HOST_OUTLOOK')
+    port = os.getenv('PORT')
+    source_address = os.getenv('EMAIL_GMAIL') if host_name == 'gmail' else os.getenv('EMAIL_OUTLOOK')
+    password = os.getenv('PASSWORD_GMAIL') if host_name == 'gmail' else os.getenv('PASSWORD_OUTLOOK')
+
+    if not host:
+        host = input("Ingrese el host del servidor de correos ")
+        if not host:
+            print("Se requiere el nombre de host de servidor de correo, agreguelo en el archivo '.env' como 'HOST_GMAIL' o 'HOST_OUTLOOK', o ingreselo por terminal de comandos")
+            sys.exit(1)
+
+    if not port:
+        port = input("Ingrese el puerto del servidor de correos ")
+        if not port:
+            print("Se requiere el puerto del servidor de correo, agreguelo en el archivo '.env' como 'PORT', o ingreselo por terminal de comandos")
+            sys.exit(1)
+
+    if not source_address:
+        source_address = input("Ingrese el correo emisor para el servidor " + host_name + " ")
+        if not source_address:
+            print("Se requiere el correo emisor, agreguelo en el archivo '.env' como 'EMAIL_GMAIL' o 'EMAIL_OUTLOOK', o ingreselo por terminal de comandos")
+            sys.exit(1)
+
+    if not password:
+        print("Ingrese la contrasena del correo " + source_address + " ")
+        try:
+            password = getpass.getpass()
+        except Exception as error:
+                print('ERROR', error)
+                password = None
+
+        if not password:
+            print("Se requiere la contrasena de " + source_address + ", agreguelo en el archivo '.env' como 'PASSWORD_GMAIL' o 'PASSWORD_OUTLOOK', o ingreselo por terminal de comandos")
+            sys.exit(1)
+
+    return host, port, source_address, password
+
+
+
 def send_email(smtp, source_address, destination_address, html, meta):
     try:
         msg = MIMEMultipart('alternative')
@@ -78,19 +119,8 @@ def render_template(template, data, meta):
 
 def main(data_path, data_sheet, meta_sheet, template, host_name='outlook', debug=False):
     print("*** EMAIL***")
-    host = os.getenv('HOST_GMAIL') if host_name == 'gmail' else os.getenv('HOST_OUTLOOK')
-    port = os.getenv('PORT')
-    source_address = os.getenv('EMAIL_GMAIL') if host_name == 'gmail' else os.getenv('EMAIL_OUTLOOK')
-    password = os.getenv('PASSWORD_GMAIL') if host_name == 'gmail' else os.getenv('PASSWORD_OUTLOOK')
-    destination_address = os.getenv('DESTINATION')
 
-    if not source_address:
-        source_address = input(f"correo {host_name}: ")
-        if not password:
-            try:
-                password = getpass.getpass()
-            except Exception as error:
-                print('ERROR', error)
+    host, port, source_address, password = getEnVars(host_name)
 
     try:
         # tabla de notas
